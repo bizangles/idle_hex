@@ -1,0 +1,64 @@
+.floating_menu {
+    position: absolute;
+    margin: 5px;
+    z-index: 1;
+    background-color: white;
+    border: 1px solid black;
+}
+
+.floating_menu ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+.floating_menu ul li {
+    list-style: none;
+    padding: 5px;
+}
+
+#menu_topright {
+    top: 0px;
+    right: 0px;
+    height: 30px;
+    line-height: 30px;
+}
+
+#menu_topright ul {
+    display: inline;
+}
+
+#menu_topright ul li {
+    display: inline;
+}
+
+#menu_topright ul li:first-child {
+    border-left: 0px;
+}
+
+#menu_left {
+    left: 5px;
+    height: 80%;
+    top: 10%;
+    border: none;
+}
+
+#menu_bottom {
+    right: 0px;
+    bottom: 0px;
+    padding: 5px;
+}
+
+#dragging_space {
+    position: absolute;
+    z-index: 2;
+    overflow: hidden;
+}
+
+canvas.dragging {
+    position: absolute;
+}
+
+.ui-widget-overlay {
+    background: #AAA;
+}

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="media/js/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="media/js/hex.js"></script>
+    <script type="text/javascript" src="media/js/logic.js"></script>
+    <script type="text/javascript" src="media/js/engine.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"></link>
+    <link rel="stylesheet" href="media/css/hex.css"></link>
+
+    <script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+    $(function() {
+        window.grid = new hex.HexGrid('#hexgrid');
+        grid.setup_menu('#hex_objects');
+        grid.start();
+
+        $("#config").dialog({
+            autoOpen: false,
+            draggable: false,
+            resizable: false,
+            modal: true,
+            buttons: [{text: "save"}]
+        });
+/*
+        $('#import').click(function(e) {
+            $('#import').hide();
+            $('#import_input').show();
+            });
+        $('#import_input button.default').click(function(e) {
+            $('#import_input input').val("eJyLjlZyzEtR0lHQNdRRMNBRMNVRMNFRMIzVUYBJGICRMZJ4QGlOcSpIC1BQ1wioB0MUqMHQAEMUqNQIIurj6qIE5kO44ZlFYDVGEBwNtMkoFkMG6MBosG3oMgYQLYYQCZfUnMRKqIcMwQ5HsQTizWggZYJqkCHYQdEGGBJGEAmIjlgAo5ZEuQ==");
+            $('#import_input button.import').click();
+        });
+        $('#import_input button.import').click(function(e) {
+            var t = $('#import_input input').val();
+            $.ajax("import", {
+                'data': {'c': t},
+                'success': function(r) {
+                    grid.import(r);
+                },
+            });
+            $('#import_input input').val('');
+            $('#import').show();
+            $('#import_input').hide();
+        });
+        $('#import_input button.cancel').click(function(e) {
+            $('#import_input input').val('');
+            $('#import').show();
+            $('#import_input').hide();
+        });
+
+        $('#export').click(function(e) {
+            var c = grid.export();
+            $.ajax("{% url "hex_export" %}", {
+                'data': {'c': JSON.stringify(c)},
+                'success': function(r) {
+                    $('#export_input input').val(r);
+                    $('#export').hide();
+                    $('#export_input').show();
+                },
+            });
+        });
+        $('#export_input button.done').click(function(e) {
+            $('#export_input input').val('');
+            $('#export').show();
+            $('#export_input').hide();
+        });
+*/
+        $('button.play').button({
+            icons: { primary: "ui-icon-play" },
+            text: false
+        }).click(function(){grid.play()});
+        $('button.pause').button({
+            icons: { primary: "ui-icon-pause" },
+            text: false
+        }).click(function(){grid.pause()});
+        $('button.stop').button({
+            icons: { primary: "ui-icon-stop" },
+            text: false
+        }).click(function(){grid.stop()});
+        $('button.restart').button({
+            icons: { primary: "ui-icon-arrowrefresh-1-e" },
+            text: false
+        }).click(function(){grid.restart()});
+    });
+    </script>
+</head>
+<body style="height:100%; margin:0px">
+    <canvas id="hexgrid" style="height:100%; width:100%; position:absolute;"></canvas>
+    <div id="menu_topright" class="floating_menu">
+        <ul class="importexport">
+            <li id="import">import</li>
+            <li id="import_input" style="display:none">
+                <input></input>
+                <button class="default">default</button>
+                <button class="import">import</button>
+                <button class="cancel">cancel</button>
+            </li>
+            <li id="export">export</li>
+            <li id="export_input" style="display:none">
+                <input></input>
+                <button class="done">done</button>
+            </li>
+        </ul>
+    </div>
+    <div id="menu_left" class="floating_menu">
+        <div id="hex_objects"></div>
+    </div>
+    <div id="menu_bottom" class="floating_menu ui-corner-all">
+        <button class="play">play</button>
+        <button class="pause">pause</button>
+        <button class="stop">stop</button>
+        <button class="restart">restart</button>
+    </div>
+    <div id="dragging_space"></div>
+    <div id="config" title="Config">I'm a thing</div>
+</body>
+</html>
+
+
