@@ -73,6 +73,14 @@ class logic.Base
         ctx.fill()
         ctx.restore()
 
+    draw_circle: (ctx, size, color) ->
+        ctx.save()
+        ctx.beginPath()
+        ctx.arc(0, 0, size, 0, 2*Math.PI)
+        ctx.fillStyle = color
+        ctx.fill()
+        ctx.restore()
+
     is_powered: () ->
         false
 
@@ -148,7 +156,7 @@ class logic.Base
         $(t_canv).mousedown((e) => obj.mousedown(e)
         ).mouseup((e) => obj.mouseup(e)
         ).mousemove((e) => obj.mousemove(e))
-        
+
         obj.draw(t_ctx)
         [t_canv, obj]
 
@@ -173,6 +181,74 @@ class logic.Base
 class logic.Blank extends logic.Base
     name: ""
     draw_logic: () ->
+
+
+class logic.Heat_Source extends logic.Base
+    name: "source"
+
+    takes_heat: false
+
+    constructor: (@heat) ->
+        @next_state = @state =
+            heat: @heat
+        super
+
+    get_args: () ->
+        [@heat]
+
+    tick: (x, y, grid) ->
+        all_adjacent = grid.get_all_adjacent(x, y)
+        takes_heat = []
+        total_take = 0
+        for [a_x, a_y, adj] in all_adjacent
+            if adj? and adj.takes_heat and adj.state.heat < @state.heat
+                take = (@state.heat - adj.state.heat) / 2
+                total_take += take
+                takes_heat.push [adj, take]
+
+        take_ratio = Math.min(1, @state.heat / total_take)
+
+        for [adj, take] in takes_heat
+            take_amt = take_ratio * take
+            @give_heat(adj, take_amt)
+
+    give_heat: (to, heat) ->
+        to.take_heat(heat)
+
+class logic.Heat_Sync extends logic.Heat_Source
+    name: "sync"
+
+    takes_heat: true
+
+    constructor: (@max_heat) ->
+        super(0)
+
+    get_args: () ->
+        [@max_heat]
+
+    give_heat: (to, heat) ->
+        @next_state =
+            heat: @next_state.heat - heat
+        super
+
+    take_heat: (heat) ->
+        @next_state =
+            heat: @next_state.heat + heat
+
+    draw_logic: (ctx) ->
+        @draw_circle ctx, Math.max(0, Math.min(@state.heat / @max_heat * 25, 25)), "#FDD"
+
+
+class logic.Power_Gen extends logic.Heat_Sync
+    name: "gen"
+
+    take_heat: (heat) ->
+        @next_state =
+            heat: @next_state.heat + heat
+
+    flush: () ->
+        @next_state.heat = Math.max(0, @next_state.heat - @max_heat)
+        super
 
 
 class logic.Binary_Gate extends logic.Base
@@ -227,7 +303,7 @@ class logic.Binary_Gate extends logic.Base
 
 class logic.And extends logic.Binary_Gate
     name: "and"
-    img_src: "media/img/hex/AND_ANSI.svg"
+    img_src: "media/img/AND_ANSI.svg"
 
     tick_logic: (in1, in2) ->
         in1 and in2
@@ -235,7 +311,7 @@ class logic.And extends logic.Binary_Gate
 
 class logic.Nor extends logic.Binary_Gate
     name: "and"
-    img_src: "media/img/hex/NOR_ANSI.svg"
+    img_src: "media/img/NOR_ANSI.svg"
 
     tick_logic: (in1, in2) ->
         not (in1 or in2)
@@ -243,7 +319,7 @@ class logic.Nor extends logic.Binary_Gate
 
 class logic.Nand extends logic.Binary_Gate
     name: "and"
-    img_src: "media/img/hex/NAND_ANSI.svg"
+    img_src: "media/img/NAND_ANSI.svg"
 
     tick_logic: (in1, in2) ->
         not (in1 and in2)

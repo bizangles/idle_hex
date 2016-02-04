@@ -395,10 +395,7 @@
     HexGrid.prototype.setup_menu = function(menu_id) {
       var _o, i, len, menu, menu_obj, obj, obj_canv, obj_div, objs, ref, type;
       menu = {
-        base: [new logic.Wire([[4, 1], [], []]), new logic.Delay(4, 1)],
-        gates: [new logic.And(3, 5, 1), new logic.Nor(3, 5, 1), new logic.Nand(3, 5, 1)],
-        input: [new logic.Pulse(10), new logic.Switch()],
-        output: [new logic.LED()]
+        power: [new logic.Heat_Source(10), new logic.Heat_Sync(10), new logic.Power_Gen(100)]
       };
       menu_obj = $(menu_id);
       for (type in menu) {
@@ -528,6 +525,18 @@
       ref = this.get_adjacent_xy(x, y, dir), a_x = ref[0], a_y = ref[1];
       pos = a_x + "," + a_y;
       return [a_x, a_y, this.objects[pos]];
+    };
+
+    HexGrid.prototype.get_all_adjacent = function(x, y) {
+      var adj, adjacent, dir, i;
+      adjacent = [];
+      for (dir = i = 0; i < 6; dir = ++i) {
+        adj = this.get_adjacent(x, y, dir);
+        if (adj[2] != null) {
+          adjacent.push(adj);
+        }
+      }
+      return adjacent;
     };
 
     return HexGrid;

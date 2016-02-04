@@ -25,50 +25,6 @@
             modal: true,
             buttons: [{text: "save"}]
         });
-/*
-        $('#import').click(function(e) {
-            $('#import').hide();
-            $('#import_input').show();
-            });
-        $('#import_input button.default').click(function(e) {
-            $('#import_input input').val("eJyLjlZyzEtR0lHQNdRRMNBRMNVRMNFRMIzVUYBJGICRMZJ4QGlOcSpIC1BQ1wioB0MUqMHQAEMUqNQIIurj6qIE5kO44ZlFYDVGEBwNtMkoFkMG6MBosG3oMgYQLYYQCZfUnMRKqIcMwQ5HsQTizWggZYJqkCHYQdEGGBJGEAmIjlgAo5ZEuQ==");
-            $('#import_input button.import').click();
-        });
-        $('#import_input button.import').click(function(e) {
-            var t = $('#import_input input').val();
-            $.ajax("import", {
-                'data': {'c': t},
-                'success': function(r) {
-                    grid.import(r);
-                },
-            });
-            $('#import_input input').val('');
-            $('#import').show();
-            $('#import_input').hide();
-        });
-        $('#import_input button.cancel').click(function(e) {
-            $('#import_input input').val('');
-            $('#import').show();
-            $('#import_input').hide();
-        });
-
-        $('#export').click(function(e) {
-            var c = grid.export();
-            $.ajax("{% url "hex_export" %}", {
-                'data': {'c': JSON.stringify(c)},
-                'success': function(r) {
-                    $('#export_input input').val(r);
-                    $('#export').hide();
-                    $('#export_input').show();
-                },
-            });
-        });
-        $('#export_input button.done').click(function(e) {
-            $('#export_input input').val('');
-            $('#export').show();
-            $('#export_input').hide();
-        });
-*/
         $('button.play').button({
             icons: { primary: "ui-icon-play" },
             text: false
@@ -91,20 +47,6 @@
 <body style="height:100%; margin:0px">
     <canvas id="hexgrid" style="height:100%; width:100%; position:absolute;"></canvas>
     <div id="menu_topright" class="floating_menu">
-        <ul class="importexport">
-            <li id="import">import</li>
-            <li id="import_input" style="display:none">
-                <input></input>
-                <button class="default">default</button>
-                <button class="import">import</button>
-                <button class="cancel">cancel</button>
-            </li>
-            <li id="export">export</li>
-            <li id="export_input" style="display:none">
-                <input></input>
-                <button class="done">done</button>
-            </li>
-        </ul>
     </div>
     <div id="menu_left" class="floating_menu">
         <div id="hex_objects"></div>

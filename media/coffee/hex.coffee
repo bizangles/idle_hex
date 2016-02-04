@@ -336,21 +336,26 @@ class hex.HexGrid
 
     setup_menu: (menu_id) ->
         menu =
-            base: [
-                new logic.Wire [[4, 1],[],[]]
-                new logic.Delay 4, 1
-            ]
-            gates: [
-                new logic.And 3, 5, 1
-                new logic.Nor 3, 5, 1
-                new logic.Nand 3, 5, 1
-            ]
-            input: [
-                new logic.Pulse 10
-                new logic.Switch()
-            ]
-            output: [
-                new logic.LED()
+            #base: [
+            #    new logic.Wire [[4, 1],[],[]]
+            #    new logic.Delay 4, 1
+            #]
+            #gates: [
+            #    new logic.And 3, 5, 1
+            #    new logic.Nor 3, 5, 1
+            #    new logic.Nand 3, 5, 1
+            #]
+            #input: [
+            #    new logic.Pulse 10
+            #    new logic.Switch()
+            #]
+            #output: [
+            #    new logic.LED()
+            #]
+            power: [
+                new logic.Heat_Source 10
+                new logic.Heat_Sync 10
+                new logic.Power_Gen 100
             ]
 
         menu_obj = $(menu_id)
@@ -457,5 +462,13 @@ class hex.HexGrid
         [a_x, a_y] = @get_adjacent_xy x, y, dir
         pos = a_x + "," + a_y
         return [a_x, a_y, @objects[pos]]
+
+    get_all_adjacent: (x, y) ->
+        adjacent = []
+        for dir in [0...6]
+            adj = @get_adjacent(x, y, dir)
+            if adj[2]?
+                adjacent.push adj
+        return adjacent
 
 window.hex = hex

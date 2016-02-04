@@ -93,6 +93,15 @@
       return ctx.restore();
     };
 
+    Base.prototype.draw_circle = function(ctx, size, color) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(0, 0, size, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
+      return ctx.restore();
+    };
+
     Base.prototype.is_powered = function() {
       return false;
     };
@@ -235,6 +244,117 @@
 
   })(logic.Base);
 
+  logic.Heat_Source = (function(superClass) {
+    extend(Heat_Source, superClass);
+
+    Heat_Source.prototype.name = "source";
+
+    Heat_Source.prototype.takes_heat = false;
+
+    function Heat_Source(heat1) {
+      this.heat = heat1;
+      this.next_state = this.state = {
+        heat: this.heat
+      };
+      Heat_Source.__super__.constructor.apply(this, arguments);
+    }
+
+    Heat_Source.prototype.get_args = function() {
+      return [this.heat];
+    };
+
+    Heat_Source.prototype.tick = function(x, y, grid) {
+      var a_x, a_y, adj, all_adjacent, j, k, len, len1, ref, ref1, results, take, take_amt, take_ratio, takes_heat, total_take;
+      all_adjacent = grid.get_all_adjacent(x, y);
+      takes_heat = [];
+      total_take = 0;
+      for (j = 0, len = all_adjacent.length; j < len; j++) {
+        ref = all_adjacent[j], a_x = ref[0], a_y = ref[1], adj = ref[2];
+        if ((adj != null) && adj.takes_heat && adj.state.heat < this.state.heat) {
+          take = (this.state.heat - adj.state.heat) / 2;
+          total_take += take;
+          takes_heat.push([adj, take]);
+        }
+      }
+      take_ratio = Math.min(1, this.state.heat / total_take);
+      results = [];
+      for (k = 0, len1 = takes_heat.length; k < len1; k++) {
+        ref1 = takes_heat[k], adj = ref1[0], take = ref1[1];
+        take_amt = take_ratio * take;
+        results.push(this.give_heat(adj, take_amt));
+      }
+      return results;
+    };
+
+    Heat_Source.prototype.give_heat = function(to, heat) {
+      return to.take_heat(heat);
+    };
+
+    return Heat_Source;
+
+  })(logic.Base);
+
+  logic.Heat_Sync = (function(superClass) {
+    extend(Heat_Sync, superClass);
+
+    Heat_Sync.prototype.name = "sync";
+
+    Heat_Sync.prototype.takes_heat = true;
+
+    function Heat_Sync(max_heat) {
+      this.max_heat = max_heat;
+      Heat_Sync.__super__.constructor.call(this, 0);
+    }
+
+    Heat_Sync.prototype.get_args = function() {
+      return [this.max_heat];
+    };
+
+    Heat_Sync.prototype.give_heat = function(to, heat) {
+      this.next_state = {
+        heat: this.next_state.heat - heat
+      };
+      return Heat_Sync.__super__.give_heat.apply(this, arguments);
+    };
+
+    Heat_Sync.prototype.take_heat = function(heat) {
+      return this.next_state = {
+        heat: this.next_state.heat + heat
+      };
+    };
+
+    Heat_Sync.prototype.draw_logic = function(ctx) {
+      return this.draw_circle(ctx, Math.max(0, Math.min(this.state.heat / this.max_heat * 25, 25)), "#FDD");
+    };
+
+    return Heat_Sync;
+
+  })(logic.Heat_Source);
+
+  logic.Power_Gen = (function(superClass) {
+    extend(Power_Gen, superClass);
+
+    function Power_Gen() {
+      return Power_Gen.__super__.constructor.apply(this, arguments);
+    }
+
+    Power_Gen.prototype.name = "gen";
+
+    Power_Gen.prototype.take_heat = function(heat) {
+      return this.next_state = {
+        heat: this.next_state.heat + heat
+      };
+    };
+
+    Power_Gen.prototype.flush = function() {
+      this.next_state.heat = Math.max(0, this.next_state.heat - this.max_heat);
+      return Power_Gen.__super__.flush.apply(this, arguments);
+    };
+
+    return Power_Gen;
+
+  })(logic.Heat_Sync);
+
   logic.Binary_Gate = (function(superClass) {
     extend(Binary_Gate, superClass);
 
@@ -312,7 +432,7 @@
 
     And.prototype.name = "and";
 
-    And.prototype.img_src = "media/img/hex/AND_ANSI.svg";
+    And.prototype.img_src = "media/img/AND_ANSI.svg";
 
     And.prototype.tick_logic = function(in1, in2) {
       return in1 && in2;
@@ -331,7 +451,7 @@
 
     Nor.prototype.name = "and";
 
-    Nor.prototype.img_src = "media/img/hex/NOR_ANSI.svg";
+    Nor.prototype.img_src = "media/img/NOR_ANSI.svg";
 
     Nor.prototype.tick_logic = function(in1, in2) {
       return !(in1 || in2);
@@ -350,7 +470,7 @@
 
     Nand.prototype.name = "and";
 
-    Nand.prototype.img_src = "media/img/hex/NAND_ANSI.svg";
+    Nand.prototype.img_src = "media/img/NAND_ANSI.svg";
 
     Nand.prototype.tick_logic = function(in1, in2) {
       return !(in1 && in2);
